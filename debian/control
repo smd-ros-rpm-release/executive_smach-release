@@ -1,0 +1,12 @@
+Source: ros-hydro-executive-smach
+Section: misc
+Priority: extra
+Maintainer: "Jonathan Bohren <jbo@jhu.edu>"
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin
+Homepage: http://ros.org/wiki/smach
+Standards-Version: 3.9.2
+
+Package: ros-hydro-executive-smach
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-smach, ros-hydro-smach-msgs, ros-hydro-smach-ros
+Description: This metapackage depends on the SMACH library and ROS SMACH integration packages.
