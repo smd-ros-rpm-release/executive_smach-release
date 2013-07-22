@@ -1,0 +1,12 @@
+Source: ros-hydro-smach-msgs
+Section: misc
+Priority: extra
+Maintainer: "Jonathan Bohren <jbo@jhu.edu>"
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin, ros-hydro-message-generation, ros-hydro-std-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-hydro-smach-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-message-runtime, ros-hydro-std-msgs
+Description: this package contains a set of messages that are used by the introspection interfaces for smach.
