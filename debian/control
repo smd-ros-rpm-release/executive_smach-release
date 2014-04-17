@@ -1,0 +1,12 @@
+Source: ros-indigo-smach-ros
+Section: misc
+Priority: extra
+Maintainer: Jonathan Bohren <jbo@jhu.edu>
+Build-Depends: debhelper (>= 7.0.50~), ros-indigo-catkin, ros-indigo-rostest
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-indigo-smach-ros
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-actionlib, ros-indigo-actionlib-msgs, ros-indigo-rospy, ros-indigo-rostopic, ros-indigo-smach, ros-indigo-smach-msgs, ros-indigo-std-msgs, ros-indigo-std-srvs
+Description: The smach_ros package contains extensions for the SMACH library to integrate it tightly with ROS. For example, SMACH-ROS can call ROS services, listen to ROS topics, and integrate with actionlib both as a client, and a provider of action servers. SMACH is a new library that takes advantage of very old concepts in order to quickly create robust robot behavior with maintainable and modular code.
