@@ -175,6 +175,7 @@ class Concurrence(smach.container.Container):
         # Condition variables for threading synchronization
         self._user_code_exception = False
         self._done_cond = threading.Condition()
+        self._ready_event =  threading.Event()
 
     ### Construction methods
     @staticmethod
@@ -193,9 +194,12 @@ class Concurrence(smach.container.Container):
 
     ### State interface
     def execute(self, parent_ud = smach.UserData()):
-        """Overloaded execute method.
+        """Overridden execute method.
         This starts all the threads.
         """
+        # Clear the ready event
+        self._ready_event.clear()
+        
         # Reset child outcomes
         self._child_outcomes = {}
 
@@ -224,6 +228,11 @@ class Concurrence(smach.container.Container):
         
         # Wait for done notification
         self._done_cond.acquire()
+        
+        # Notify all threads ready to go
+        self._ready_event.set()
+        
+        # Wait for a done notification from a thread
         self._done_cond.wait()
         self._done_cond.release()
 
@@ -235,10 +244,10 @@ class Concurrence(smach.container.Container):
 
         # Wait for all states to terminate
         while not smach.is_shutdown():
-            if all([o is not None for o in self._child_outcomes.values()]):
+            if all([not t.isAlive() for t in self._threads.values()]):
                 break
             self._done_cond.acquire()
-            self._done_cond.wait()
+            self._done_cond.wait(0.1)
             self._done_cond.release()
 
         # Check for user code exception
@@ -315,6 +324,10 @@ class Concurrence(smach.container.Container):
 
     def _state_runner(self,label):
         """Runs the states in parallel threads."""
+
+        # Wait until all threads are ready to start before beginnging
+        self._ready_event.wait()
+        
         self.call_transition_cbs()
 
         # Execute child state
@@ -332,7 +345,7 @@ class Concurrence(smach.container.Container):
 
         # Make sure the child returned an outcome
         if self._child_outcomes[label] is None:
-            raise smach.InvalidStateexception("Concurrent state '%s' returned no outcome on termination." % label)
+            raise smach.InvalidStateError("Concurrent state '%s' returned no outcome on termination." % label)
         else:
             smach.loginfo("Concurrent state '%s' returned outcome '%s' on termination." % (label, self._child_outcomes[label]))
 
@@ -366,7 +379,9 @@ class Concurrence(smach.container.Container):
     def set_initial_state(self, initial_states, userdata):
         if initial_states > 0:
             if initial_states < len(self._states):
-                logwarn("Attempting to set initial states in Concurrence container, but Concurrence children are always all executed initially")
+                smach.logwarn("Attempting to set initial states in Concurrence"
+                              " container, but Concurrence children are always"
+                              " all executed initially, ignoring call.")
 
         # Set local userdata
         self.userdata.update(userdata)
@@ -378,7 +393,7 @@ class Concurrence(smach.container.Container):
         int_edges = []
         for (container_outcome, outcomes) in ((k,self._outcome_map[k]) for k in self._outcome_map):
             for state_key in outcomes:
-                int_edges.append([outcomes[state_key],state_key,container_outcome])
+                int_edges.append((outcomes[state_key], state_key, container_outcome))
         return int_edges
 
     def check_consistency(self):
