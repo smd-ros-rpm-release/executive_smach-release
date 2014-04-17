@@ -1,0 +1,12 @@
+Source: ros-indigo-executive-smach
+Section: misc
+Priority: extra
+Maintainer: Jonathan Bohren <jbo@jhu.edu>
+Build-Depends: debhelper (>= 7.0.50~), ros-indigo-catkin
+Homepage: http://ros.org/wiki/smach
+Standards-Version: 3.9.2
+
+Package: ros-indigo-executive-smach
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-smach, ros-indigo-smach-msgs, ros-indigo-smach-ros
+Description: This metapackage depends on the SMACH library and ROS SMACH integration packages.
